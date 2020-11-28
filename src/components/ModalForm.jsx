@@ -3,13 +3,7 @@ import { Button, Modal, Form } from "react-bootstrap";
 class ModalForm extends Component {
   state = {
     showModal: false,
-    productDetails: {
-      name: "test",
-      brand: "",
-      description: "",
-      price: "",
-      imageUrl: "",
-    },
+    productDetails: this.props.product ? this.props.product : {},
   };
 
   onChangeHandler = (e) => {
@@ -22,19 +16,20 @@ class ModalForm extends Component {
   };
 
   submitData = async () => {
+    const url = this.props.productId
+      ? "https://striveschool-api.herokuapp.com/api/product/" +
+        this.props.productId
+      : "https://striveschool-api.herokuapp.com/api/product/";
     try {
-      const response = await fetch(
-        "https://striveschool-api.herokuapp.com/api/product/",
-        {
-          method: "POST",
-          body: JSON.stringify(this.state.productDetails),
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
-          },
-        }
-      );
+      const response = await fetch(url, {
+        method: this.props.method,
+        body: JSON.stringify(this.state.productDetails),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
+        },
+      });
       console.log(response);
       if (response.ok) {
         this.setState({ showModal: false });
@@ -54,13 +49,15 @@ class ModalForm extends Component {
       <div>
         <>
           <Button
-            variant="primary"
+            variant={this.props.method === "PUT" ? "success" : "primary"}
             onClick={() => {
               this.setState({ showModal: true });
               this.props.handleAlert(undefined, false);
             }}
           >
-            Add product
+            {this.props.method === "PUT"
+              ? "Update the product"
+              : "Add a new product"}
           </Button>
 
           <Modal

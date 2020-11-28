@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
 import ModalForm from "./ModalForm";
 import ProductsTable from "./ProductsTable";
+import services from "../services";
 class Backoffice extends Component {
   state = {
     showAlert: false,
@@ -32,46 +33,50 @@ class Backoffice extends Component {
     }
   };
   fetchData = async () => {
-    try {
-      //   const response = await Promise.all(
-      //     urls.map(async (url) => {
-      //       const response = await fetch(url, {
-      //         headers: {
-      //           Authorization:
-      //             "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
-      //         },
-      //       });
-      //       return response.json();
-      //     })
-      //   );
+    // try {
+    //   const response = await Promise.all(
+    //     urls.map(async (url) => {
+    //       const response = await fetch(url, {
+    //         headers: {
+    //           Authorization:
+    //             "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
+    //         },
+    //       });
+    //       return response.json();
+    //     })
+    //   );
 
-      const response = await fetch(
-        "https://striveschool-api.herokuapp.com/api/product/",
-        {
-          headers: {
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
-          },
-        }
-      );
+    //   const response = await fetch(
+    //     "https://striveschool-api.herokuapp.com/api/product/",
+    //     {
+    //       headers: {
+    //         Authorization:
+    //           "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZmI2NjI5ZDk4MzViMDAwMTc1ODRlZTUiLCJpYXQiOjE2MDU3ODgzMTcsImV4cCI6MTYwNjk5NzkxN30.oP4BYUhxzJrIcZ0PWD68xETCimnePC7kIrswf4xirag",
+    //       },
+    //     }
+    //   );
 
-      if (response.ok) {
-        const data = await response.json();
-        this.setState({ products: data });
-      }
+    //   if (response.ok) {
+    //     const data = await response.json();
+    //     this.setState({ products: data });
+    //   }
 
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+    //   console.log(response);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    services.fetchData((data) => {
+      this.setState({ products: data });
+    });
   };
 
   render() {
     console.log(this.props.query);
     return (
-      <div>
+      <Container className="my-3">
         {this.state.showAlert && (
           <Alert
+            className=" my-3"
             variant={this.state.success ? "success" : "danger"}
             dismissible
             onClose={() => this.setState({ showAlert: false })}
@@ -81,12 +86,17 @@ class Backoffice extends Component {
             </Alert.Heading>
           </Alert>
         )}
-        <ModalForm handleAlert={this.handleAlert} refetch={this.fetchData} />
+        <ModalForm
+          handleAlert={this.handleAlert}
+          refetch={this.fetchData}
+          method={"POST"}
+        />
         <ProductsTable
           products={this.state.products}
           refetch={this.fetchData}
+          handleAlert={this.handleAlert}
         />
-      </div>
+      </Container>
     );
   }
 }

@@ -31,7 +31,10 @@ class AppNavBar extends Component {
           <Button variant="outline-info">Search</Button>
         </Form>
         <Link to="/cart">
-          <BiCartAlt style={style.icon} />
+          <div>
+            <BiCartAlt style={style.icon} />
+            {this.props.totalInCart}
+          </div>
         </Link>
       </Navbar>
     );
