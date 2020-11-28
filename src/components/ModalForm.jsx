@@ -1,18 +1,22 @@
-import React, { Component, useEffect, useState } from "react";
-import { Button, Modal, Form, Alert } from "react-bootstrap";
+import React, { Component } from "react";
+import { Button, Modal, Form } from "react-bootstrap";
 class ModalForm extends Component {
   state = {
-    show: false,
-    product: {},
-    showAlert: false,
-    success: false,
+    showModal: false,
+    productDetails: {
+      name: "test",
+      brand: "",
+      description: "",
+      price: "",
+      imageUrl: "",
+    },
   };
 
-  handleChange = (e) => {
+  onChangeHandler = (e) => {
     this.setState({
-      product: {
-        ...this.state.product,
-        [e.currentTarget.id]: e.currentTarget.value,
+      productDetails: {
+        ...this.state.productDetails,
+        [e.target.id]: e.currentTarget.value,
       },
     });
   };
@@ -23,7 +27,7 @@ class ModalForm extends Component {
         "https://striveschool-api.herokuapp.com/api/product/",
         {
           method: "POST",
-          body: JSON.stringify(this.state.product),
+          body: JSON.stringify(this.state.productDetails),
           headers: {
             "Content-Type": "application/json",
             Authorization:
@@ -31,85 +35,107 @@ class ModalForm extends Component {
           },
         }
       );
+      console.log(response);
       if (response.ok) {
-        this.setState({ showAlert: true, show: false, success: true });
+        this.setState({ showModal: false });
+        this.props.handleAlert(true, true);
       } else {
-        this.setState({ showAlert: true, show: false, success: false });
+        this.setState({ showModal: false });
+        this.props.handleAlert(false, true);
       }
     } catch (e) {
       console.log(e);
-      this.setState({ showAlert: true, show: false, success: false });
     }
   };
 
   render() {
     return (
-      <>
-        <Button variant="primary" onClick={() => this.setState({ show: true })}>
-          Add product
-        </Button>
-        {this.state.showAlert && !this.state.show && (
-          <Alert
-            variant={this.state.success ? "success" : "danger"}
-            onClose={() => this.setState({ showAlert: false })}
-            dismissable
+      <div>
+        <>
+          <Button
+            variant="primary"
+            onClick={() => {
+              this.setState({ showModal: true });
+              this.props.handleAlert(undefined, false);
+            }}
           >
-            <Alert.Heading>
-              {this.state.success ? "Product added" : "Error!"}
-            </Alert.Heading>
-          </Alert>
-        )}
+            Add product
+          </Button>
 
-        <Modal
-          show={this.state.show}
-          onHide={() => this.setState({ show: false })}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title>Modal heading</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Control
-              id={"name"}
-              value={this.state.product.name}
-              onChange={(e) => this.handleChange(e)}
-            />
-            <Form.Control
-              id={"description"}
-              value={this.state.product.description}
-              onChange={(e) => this.handleChange(e)}
-            />
-            <Form.Control
-              id={"brand"}
-              value={this.state.product.brand}
-              onChange={(e) => this.handleChange(e)}
-            />
-            <Form.Control
-              id={"price"}
-              type={"number"}
-              value={this.state.product.price}
-              onChange={(e) => this.handleChange(e)}
-            />
-            <Form.Control
-              id={"imageUrl"}
-              placeholder={"Image"}
-              type={"url"}
-              value={this.state.product.imageUrl}
-              onChange={(e) => this.handleChange(e)}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="secondary"
-              onClick={() => this.setState({ show: false })}
-            >
-              Close
-            </Button>
-            <Button variant="primary" onClick={() => this.submitData()}>
-              Submit Product
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
+          <Modal
+            show={this.state.showModal}
+            onHide={() => this.setState({ showModal: false })}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Modal heading</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group>
+                  <Form.Label>Product Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={this.state.productDetails.name}
+                    placeholder="Enter name"
+                    id="name"
+                    onChange={(e) => this.onChangeHandler(e)}
+                  />
+                </Form.Group>
+
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Product Description</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="description"
+                    placeholder="Enter Description"
+                    value={this.state.productDetails.description}
+                    onChange={(e) => this.onChangeHandler(e)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Product Brand</Form.Label>
+                  <Form.Control
+                    type="text"
+                    id="brand"
+                    value={this.state.productDetails.brand}
+                    placeholder="Enter Brand"
+                    onChange={(e) => this.onChangeHandler(e)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Product price</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter price"
+                    id="price"
+                    value={this.state.productDetails.price}
+                    onChange={(e) => this.onChangeHandler(e)}
+                  />
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Product Image url</Form.Label>
+                  <Form.Control
+                    type="url"
+                    placeholder="Enter image url"
+                    id="imageUrl"
+                    value={this.state.productDetails.imageUrl}
+                    onChange={(e) => this.onChangeHandler(e)}
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit">
+                  Submit
+                </Button>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary">Close</Button>
+              <Button variant="primary" onClick={() => this.submitData()}>
+                Submit
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </>
+      </div>
     );
   }
 }
