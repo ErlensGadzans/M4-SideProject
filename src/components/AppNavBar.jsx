@@ -21,7 +21,13 @@ class AppNavBar extends Component {
           <Link to="/backoffice">Backoffice</Link>
         </Nav>
         <Form inline>
-          <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+          <FormControl
+            value={this.props.query}
+            type="text"
+            placeholder="Search"
+            className="mr-sm-2"
+            onChange={(e) => this.props.searchHandler(e)}
+          />
           <Button variant="outline-info">Search</Button>
         </Form>
         <Link to="/cart">
